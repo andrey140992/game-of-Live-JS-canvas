@@ -3,7 +3,7 @@ const ctx = canvas.getContext('2d');
 const size = 1000;
 const scale = size/100;
 const resolution = size / scale;
-let cells=[];
+let cells;
 let quantity = 0;
 let timer;
 
@@ -33,12 +33,12 @@ function createCells(){
 canvas.onclick = function (event) {
     let x = event.offsetX;
     let y = event.offsetY;
-    console.log(x,y);
+    /* console.log(y); */
     x = Math.floor(x/scale); 
     y = Math.floor(y/scale);
-    console.log(x, y)
+    /* console.log(y) */
     cells[y][x] = true;
-    console.log(cells);
+    /* console.log(cells) */;
     drawField(); 
 }
 
@@ -61,14 +61,14 @@ function step (){
     for (let x = 0; x < resolution; x++){
         for (let y = 0; y < resolution; y++){
             let count = 0;
-            if(cells[fpm(x)-1][y] == 1) count++;//up
-            if(cells[x][fpp(y)+1] == 1) count++;//reight
-            if(cells[fpp(x)+1][y]) count++;//bottom
-            if(cells[x][fpm(y)-1] == 1) count++;//left
-            if(cells[fpm(x)-1][fpp(y)+1] == 1) count++;
-            if(cells[fpp(x)+1][fpp(y)+1] == 1) count++;
-            if(cells[fpp(x)+1][fpm(y)-1] == 1) count++;
-            if(cells[fpm(x)-1][fpm(y)-1] == 1) count++;
+            if(cells[x][fpp(y)-1] == true) count++;//up
+            if(cells[x][fpm(y)+1] == true) count++;//bottom
+            if(cells[fpm(x)+1][y] == true) count++;//reight 
+            if(cells[fpp(x)-1][y] == true) count++;//left
+            if(cells[fpm(x)+1][fpp(y)-1] == true) count++;//up-reight
+            if(cells[fpp(x)-1][fpp(y)-1] == true) count++;//up-left
+            if(cells[fpm(x)+1][fpm(y)+1] == true) count++;//bottom-reight
+            if(cells[fpp(x)-1][fpm(y)+1] == true) count++;//bottom-left
 
             if (cells[x][y] && count >= 2 && count <= 3) newCells[x][y] = true;
             else if (!cells[x][y] && count === 3) newCells[x][y] = true;
@@ -79,18 +79,20 @@ function step (){
     drawField();
     quantity++;
     document.getElementById('quantity').innerHTML = quantity;
-    timer = setTimeout(step, 100);
-}
-
-function fpm(i){
-    if(i == 0) return resolution ;//100
-    else return i;
+    timer = setTimeout(step, 200);
 }
 
 function fpp(i){
-    if(i == resolution - 1) return 0;
-    else return i;
+   if( i == 0 ) return resolution ;
+   else return i;
+    
 }
 
-document.getElementById('start').onclick = step;
+function fpm(i){
+  if( i == resolution - 1 ) return  -1 ;
+  else return i;
+    
+}
+
+document.getElementById('start').addEventListener('click', step, { once: true });
 
